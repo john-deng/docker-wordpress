@@ -1,0 +1,82 @@
+#!/bin/bash
+###############################################################################
+# wordpress with HTTPS, nginx
+# Author: John Deng <john.deng@outlook.com>
+###############################################################################
+
+source "colors"
+source "input"
+
+WP_IMAGE=
+MYSQL_IMAGE=
+# change WP_HOST
+
+
+WP_HOST=
+WP_EMAIL=
+MYSQL_ROOT_PASSWORD="$3"
+MYSQL_PASSWORD="$4"
+
+HTML_DIR='./html/'
+MYSQL_DATA_DIR='./mysql/data/'
+
+###############################################################################
+#if [ -f .env ]; then
+#  source .env
+#fi
+
+if [ ! -f .env ] || [ "$1" == "-r" ]; then
+    rm -rf ${HTML_DIR}
+    rm -rf ${MYSQL_DATA_DIR}
+    input WP_IMAGE "WordPress Docker Image" "${WP_IMAGE}" "wordpress:latest"
+    input MYSQL_IMAGE "MySQL Docker Image" "${MYSQL_IMAGE}" "mysql.5.7"
+    input WP_HOST "Domain" "${WP_HOST}" "example.com"
+    input WP_EMAIL "Email" "${WP_EMAIL}" "your.name@example.com"
+    input MYSQL_ROOT_PASSWORD "MySQL root password" "${MYSQL_ROOT_PASSWORD}" "passw0rd"
+    input MYSQL_PASSWORD "MySQL user password" "${MYSQL_PASSWORD}" "passw0rd"
+    prompt_yesorno "Use ${WP_HOST} as your site domain? [yes/no]"
+    if (( $? == 1 )); then
+        echo "Canceled."
+        exit 1
+    fi
+    #echo "Ensure file .env"
+    cat > .env <<-EOF
+# wordpress ENV
+
+WP_IMAGE=${WP_IMAGE}
+MYSQL_IMAGE=${MYSQL_IMAGE}
+
+HTML_DIR=${HTML_DIR}
+MYSQL_DATA_DIR=${MYSQL_DATA_DIR}
+
+# wordpress
+WP_HOST=${WP_HOST}
+WP_EMAIL=${WP_EMAIL}
+WP_IMAGE=${WP_IMAGE}
+
+WP_PORT=80
+
+# mysql
+MYSQL_PORT=3306
+MYSQL_DATABASE=wordpress
+MYSQL_USER=wp_user
+# please change below password
+MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+MYSQL_PASSWORD=${MYSQL_PASSWORD}
+EOF
+
+fi
+
+if [ ! -d ${MYSQL_DATA_DIR} ]; then
+    mkdir -p ${MYSQL_DATA_DIR}
+fi
+if [ ! -d ${HTML_DIR} ]; then
+    mkdir -p ${HTML_DIR}
+fi
+
+docker network inspect web
+if (( $? != 0 )); then
+    docker network create web
+fi
+
+echo -e "${DARKGREEN}Done ${ENDCOLOR}"

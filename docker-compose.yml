@@ -1,0 +1,42 @@
+version: '2.0'
+
+services:
+  db:
+    image: ${MYSQL_IMAGE} 
+    volumes:
+      - ${MYSQL_DATA_DIR}:/var/lib/mysql
+    privileged: true
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD} 
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - web
+
+  wordpress:
+    depends_on:
+      - db
+    image: ${WP_IMAGE} 
+    ports:
+      - "80"
+    restart: always
+    privileged: true
+    environment:
+      WORDPRESS_DB_HOST: db:${MYSQL_PORT}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD} 
+    volumes:
+      - ${HTML_DIR}:/var/www/html
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=wordpress"
+      - "traefik.frontend.rule=Host:${WP_HOST}"
+
+networks:
+  web:
+    external: true
+
