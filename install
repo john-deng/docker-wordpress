@@ -29,7 +29,7 @@ if [ ! -f .env ] || [ "$1" == "-r" ]; then
     rm -rf ${HTML_DIR}
     rm -rf ${MYSQL_DATA_DIR}
     input WP_IMAGE "WordPress Docker Image" "${WP_IMAGE}" "wordpress:latest"
-    input MYSQL_IMAGE "MySQL Docker Image" "${MYSQL_IMAGE}" "mysql.5.7"
+    input MYSQL_IMAGE "MySQL Docker Image" "${MYSQL_IMAGE}" "mysql:5.7"
     input WP_HOST "Domain" "${WP_HOST}" "example.com"
     input WP_EMAIL "Email" "${WP_EMAIL}" "your.name@example.com"
     input MYSQL_ROOT_PASSWORD "MySQL root password" "${MYSQL_ROOT_PASSWORD}" "passw0rd"
