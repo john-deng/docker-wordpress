@@ -29,10 +29,6 @@ services:
       - ${HTML_DIR}:/var/www/html
     networks:
       - web
-    labels:
-      - "traefik.enable=true"
-      - "traefik.backend=wordpress"
-      - "traefik.frontend.rule=Host:${WP_HOST}"
   nginx:
     container_name: nginx
     image: nginx:latest
