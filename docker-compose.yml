@@ -2,6 +2,7 @@ version: '2.0'
 
 services:
   db:
+    container_name: db
     image: ${MYSQL_IMAGE} 
     volumes:
       - ${MYSQL_DATA_DIR}:/var/lib/mysql
@@ -16,6 +17,7 @@ services:
       - web
 
   wordpress:
+    container_name: wordpress
     depends_on:
       - db
     image: ${WP_IMAGE} 
