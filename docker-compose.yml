@@ -33,6 +33,28 @@ services:
       - "traefik.enable=true"
       - "traefik.backend=wordpress"
       - "traefik.frontend.rule=Host:${WP_HOST}"
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    restart: always
+    privileged: true
+    ports:
+      - "80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./logs/nginx:/var/log/nginx
+      - ${HTML_DIR}:/var/www/html
+    depends_on:
+      - wordpress
+    restart: always
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=nginx"
+      - "traefik.frontend.rule=Host:${WP_HOST}"  
+
 
 networks:
   web:
